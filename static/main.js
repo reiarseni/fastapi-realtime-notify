@@ -255,6 +255,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    toggleModal();
 });
 
 // Evento de clic en el botón de cambiar usuario
@@ -262,3 +264,30 @@ document.getElementById('changeUserBtn').addEventListener('click', function() {
     const newUserId = USER_ID === '1' ? '2' : '1';
     window.location.href = `/?user_id=${newUserId}`;
 });
+
+
+function toggleModal() {
+    const modal = document.getElementById('notificationModal');
+    const allowBtn = document.getElementById('allowNotificationsBtn');
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    
+    // Verificar el estado del botón de sonido
+    function checkSoundButtonState() {
+      // Si el botón de sonido NO tiene la clase btn-outline-danger, mostrar el modal
+      // (esto significa que el sonido está ON y se requiere permiso)
+      if (!soundToggleBtn.classList.contains('btn-outline-danger')) {
+        modal.style.display = 'block';
+      } else {
+        // Si tiene la clase, significa que el sonido está OFF, no mostrar el modal
+        modal.style.display = 'none';
+      }
+    }
+    
+    // Verificar el estado inicial del botón
+    checkSoundButtonState();
+
+    allowBtn.addEventListener('click', function() {
+      modal.style.display = 'none';
+    });
+}
+
