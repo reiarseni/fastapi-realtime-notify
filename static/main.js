@@ -5,12 +5,15 @@ let reconnectAttempts = 0;
 let maxReconnectAttempts = 5;
 let reconnectTimeout = null;
 let reconnectDelay = 2000; // Tiempo inicial de espera para reconexión (2 segundos)
+let soundEnabled = true; // Variable para controlar si el sonido está activado
 
 // Elementos DOM
 const notificationBadge = document.getElementById('notificationBadge');
 const notificationBtn = document.getElementById('notificationBtn');
 const notificationList = document.getElementById('notificationList');
 const connectionStatus = document.getElementById('connectionStatus');
+const soundToggleBtn = document.getElementById('soundToggleBtn');
+const notificationSound = document.getElementById('notificationSound');
 
 // En la función initWebSocket
 function initWebSocket() {
@@ -54,6 +57,11 @@ function initWebSocket() {
                     // Actualizar contador de notificaciones
                     notificationCount = data.count;
                     updateNotificationBadge();
+                    
+                    // Reproducir sonido si está activado
+                    if (soundEnabled) {
+                        playNotificationSound();
+                    }
                 }
             } catch (e) {
                 console.error('Error al procesar el mensaje recibido:', e);
@@ -87,6 +95,19 @@ function initWebSocket() {
         };
     } catch (error) {
         console.error('Error crítico al inicializar WebSocket:', error);
+    }
+}
+
+// Función para reproducir el sonido de notificación
+function playNotificationSound() {
+    try {
+        // Reiniciar el audio para poder reproducirlo múltiples veces
+        notificationSound.currentTime = 0;
+        notificationSound.play().catch(error => {
+            console.error('Error al reproducir el sonido de notificación:', error);
+        });
+    } catch (error) {
+        console.error('Error al manejar el audio:', error);
     }
 }
 
@@ -193,8 +214,36 @@ notificationBtn.addEventListener('click', function() {
     fetchNotifications();
 });
 
+// Evento de clic en el botón de activar/desactivar sonido
+soundToggleBtn.addEventListener('click', function() {
+    soundEnabled = !soundEnabled;
+    if (soundEnabled) {
+        soundToggleBtn.innerHTML = '<i class="bi bi-volume-up-fill"></i> Sonido: ON';
+        soundToggleBtn.classList.remove('btn-outline-danger');
+        soundToggleBtn.classList.add('btn-outline-secondary');
+    } else {
+        soundToggleBtn.innerHTML = '<i class="bi bi-volume-mute-fill"></i> Sonido: OFF';
+        soundToggleBtn.classList.remove('btn-outline-secondary');
+        soundToggleBtn.classList.add('btn-outline-danger');
+    }
+    
+    // Guardar preferencia en localStorage para mantenerla entre sesiones
+    localStorage.setItem('notificationSoundEnabled', soundEnabled);
+});
+
 // Inicializar WebSocket al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
+    // Cargar preferencia de sonido desde localStorage si existe
+    if (localStorage.getItem('notificationSoundEnabled') !== null) {
+        soundEnabled = localStorage.getItem('notificationSoundEnabled') === 'true';
+        // Actualizar el botón para reflejar el estado guardado
+        if (!soundEnabled) {
+            soundToggleBtn.innerHTML = '<i class="bi bi-volume-mute-fill"></i> Sonido: OFF';
+            soundToggleBtn.classList.remove('btn-outline-secondary');
+            soundToggleBtn.classList.add('btn-outline-danger');
+        }
+    }
+    
     initWebSocket();
     
     // Verificar reconexión si la ventana vuelve a estar activa
