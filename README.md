@@ -109,9 +109,9 @@ uvicorn main:app --reload --log-level debug
 
 Modifica la función `generate_notification` en `main.py` para incluir nuevos tipos.
 
-### Restriccion de chrome sobre la reproduccion de sonidos
+## Restriccion de chrome sobre la reproduccion de sonidos
 
-Cuano se abre la pagina y no se interactua ocurre lo siguiente
+Cuando se abre la pagina y no se interactua ocurre lo siguiente
 1. Error al reproducir el sonido de notificación: NotAllowedError: play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD
 
 El error NotAllowedError: play() failed because the user didn't interact with the document first ocurre debido a las políticas de reproducción automática de audio implementadas por los navegadores modernos. Estas políticas requieren que haya una interacción directa del usuario con la página (como un clic) antes de que se pueda reproducir contenido multimedia automáticamente en la pagina web.
